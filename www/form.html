@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заказ доставки еды</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+        
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #ff7e5f;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 126, 95, 0.1);
+        }
+        
+        .checkbox-group,
+        .radio-group {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .radio-option {
+            margin: 10px 0;
+        }
+        
+        .radio-option label {
+            display: inline;
+            font-weight: normal;
+            margin-left: 8px;
+        }
+        
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 126, 95, 0.3);
+        }
+        
+        .required {
+            color: #e74c3c;
+        }
+        
+        .nav {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .nav a {
+            color: #ff7e5f;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .form-info {
+            background: #fffaf0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+            border-left: 4px solid #ff7e5f;
+        }
+        
+        .price-calc {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍕 Заказ доставки еды</h1>
+        
+        <div class="form-info">
+            <strong>ℹ️ Информация:</strong> Все заказы сохраняются в базу данных MySQL
+        </div>
+        
+        <form id="foodOrderForm" action="process.php" method="POST">
+            <!-- Имя -->
+            <div class="form-group">
+                <label for="customer_name">Ваше имя <span class="required">*</span></label>
+                <input type="text" id="customer_name" name="customer_name" placeholder="Введите ваше имя" required>
+            </div>
+
+            <!-- Количество блюд -->
+            <div class="form-group">
+                <label for="dish_count">Количество блюд <span class="required">*</span></label>
+                <input type="number" id="dish_count" name="dish_count" min="1" max="10" value="1" required>
+                <div class="price-calc" id="priceCalc">
+                    Примерная стоимость: <strong>500 ₽</strong>
+                </div>
+            </div>
+
+            <!-- Ресторан -->
+            <div class="form-group">
+                <label for="restaurant">Ресторан <span class="required">*</span></label>
+                <select id="restaurant" name="restaurant" required>
+                    <option value="">-- Выберите ресторан --</option>
+                    <option value="Пицца Мания">Пицца Мания</option>
+                    <option value="Суши Вок">Суши Вок</option>
+                    <option value="Бургер Кинг">Бургер Кинг</option>
+                    <option value="Тако Белл">Тако Белл</option>
+                    <option value="Паста Бар">Паста Бар</option>
+                    <option value="Вок Вок">Вок Вок</option>
+                </select>
+            </div>
+
+            <!-- Чекбокс "Оплата онлайн" -->
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="online_payment" name="online_payment" value="1">
+                    <label for="online_payment">Оплата онлайн</label>
+                </div>
+            </div>
+
+            <!-- Радио-кнопки "Тип упаковки" -->
+            <div class="form-group">
+                <label>Тип упаковки <span class="required">*</span></label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="packaging_standard" name="packaging_type" value="Стандартная" required>
+                        <label for="packaging_standard">Стандартная упаковка</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="packaging_eco" name="packaging_type" value="Эко-упаковка">
+                        <label for="packaging_eco">Эко-упаковка (+50 ₽)</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="packaging_premium" name="packaging_type" value="Премиум">
+                        <label for="packaging_premium">Премиум упаковка (+100 ₽)</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Оформить заказ</button>
+        </form>
+
+        <div class="nav">
+            <a href="index.php">← На главную страницу</a>
+        </div>
+    </div>
+
+    <script>
+        // Расчет стоимости при изменении количества блюд
+        document.getElementById('dish_count').addEventListener('input', function() {
+            const dishCount = this.value;
+            const basePrice = dishCount * 500;
+            document.getElementById('priceCalc').innerHTML = 
+                `Примерная стоимость: <strong>${basePrice} ₽</strong>`;
+        });
+
+        // Alert перед отправкой
+        document.getElementById("foodOrderForm").addEventListener("submit", function(e) {
+            const name = this.customer_name.value;
+            const dishCount = this.dish_count.value;
+            const restaurant = this.restaurant.value;
+            const onlinePayment = this.online_payment.checked ? 'Да' : 'Нет';
+            const packagingType = document.querySelector('input[name="packaging_type"]:checked');
+            const packagingValue = packagingType ? packagingType.value : 'Не выбрано';
+            
+            const totalPrice = dishCount * 500;
+            
+            alert("Проверьте данные заказа:\n\n" +
+                  "Имя: " + name + "\n" +
+                  "Количество блюд: " + dishCount + "\n" + 
+                  "Ресторан: " + restaurant + "\n" +
+                  "Оплата онлайн: " + onlinePayment + "\n" +
+                  "Тип упаковки: " + packagingValue + "\n" +
+                  "Общая стоимость: " + totalPrice + " ₽\n\n" +
+                  "Данные будут сохранены в базу данных MySQL");
+        });
+    </script>
+</body>
+</html>
